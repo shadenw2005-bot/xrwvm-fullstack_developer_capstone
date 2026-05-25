@@ -99,3 +99,19 @@ def get_dealer_reviews(request, dealer_id):
 
 def add_review(request):
     return JsonResponse({"status": 200})
+
+@csrf_exempt
+def analyze_review_view(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        text = data.get('text', '')
+        positive_words = ['fantastic', 'great', 'excellent', 'good', 'amazing', 'wonderful', 'best']
+        negative_words = ['bad', 'terrible', 'awful', 'poor', 'worst', 'horrible']
+        text_lower = text.lower()
+        if any(word in text_lower for word in positive_words):
+            sentiment = 'positive'
+        elif any(word in text_lower for word in negative_words):
+            sentiment = 'negative'
+        else:
+            sentiment = 'neutral'
+        return JsonResponse({"sentiment": sentiment})
