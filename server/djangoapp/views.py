@@ -63,3 +63,39 @@ def login_user(request):
 # Create a `add_review` view to submit a review
 # def add_review(request):
 # ...
+
+from django.contrib.auth import logout
+
+def logout_request(request):
+    logout(request)
+    data = {"userName": ""}
+    return JsonResponse(data)
+
+@csrf_exempt
+def registration(request):
+    from django.contrib.auth.models import User
+    data = json.loads(request.body)
+    username = data['userName']
+    password = data['password']
+    first_name = data['firstName']
+    last_name = data['lastName']
+    email = data['email']
+    try:
+        User.objects.get(username=username)
+        return JsonResponse({"userName": username, "error": "Already Registered"})
+    except:
+        user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, password=password, email=email)
+        login(request, user)
+        return JsonResponse({"userName": username, "status": "Authenticated"})
+
+def get_dealerships(request, state="All"):
+    return JsonResponse({"status": 200, "dealers": []})
+
+def get_dealer_details(request, dealer_id):
+    return JsonResponse({"status": 200})
+
+def get_dealer_reviews(request, dealer_id):
+    return JsonResponse({"status": 200, "reviews": []})
+
+def add_review(request):
+    return JsonResponse({"status": 200})
